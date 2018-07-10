@@ -1,7 +1,6 @@
 // dotenv package to use keys locally
 require("dotenv").config();
 var fs = require("fs");
-var moment = require('moment');
 
 //
 var keys = require("./keys.js");
@@ -21,6 +20,8 @@ var request = require('request');
 runCommand(process.argv[2], process.argv[3]);
 
 function runCommand(cmd, val) {
+    logActivity(cmd, val);
+    //
     switch (cmd) {
         case 'my-tweets':
             runTweet();
@@ -83,17 +84,26 @@ You will utilize the node-spotify-api package in order to retrieve song informat
 
 //
 function runSpotify(val) {
-    if (val === undefined) {
-        val = "The Sign";
-    }
+    var track_name = (val === undefined) ? 'The Sign' : val;
     var str = '';
+    var idx = 0;
 
-    spotify.search({ type: 'track', query: val }, function (err, data) {
+    spotify.search({ type: 'track', query: track_name }, function (err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
 
-        var obj = data.tracks.items[0];
+        data.tracks.items.every((cell, i) => {
+
+            if (cell.name.toLowerCase() === track_name.toLowerCase()) {
+                idx = i;
+                return false;
+            } else {
+                return true;
+            }
+        });
+
+        var obj = data.tracks.items[idx];
         str += 'ARTIST:  ' + obj.artists[0].name + '\n';
         str += 'SONG NAME:  ' + obj.name + '\n';
         str += 'LINK:  ' + obj.external_urls.spotify + '\n';
@@ -121,6 +131,7 @@ function runSpotify(val) {
 
 //
 function runOmdb(val) {
+    if (val === undefined) val = "Mr Nobody";
     var str = '';
 
     request('http://www.omdbapi.com/?t=' + val + '&apikey=trilogy', function (err, response, body) {
@@ -177,12 +188,16 @@ function runFS() {
 // Outputs string and logs activity
 function trace(str) {
     console.log(str + '\n');
-    logActivity(str + '\n');
 }
 
 
 //
-function logActivity(str) {
+function logActivity(cmd, val) {
+    var str = 'node liri.js ';
+    if (cmd !== undefined) str += cmd + " ";
+    if (val !== undefined) str += val + " ";
+    str += '\n';
+    //
     fs.appendFile("log.txt", str, function (err) {
 
         // If the code experiences any errors it will log the error to the console.
