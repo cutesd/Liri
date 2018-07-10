@@ -14,12 +14,13 @@ var client = new Twitter(keys.twitter);
 var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
 
-// console.log(keys.spotify, keys.twitter);
+// OMDB
+var request = require('request');
+
 
 runCommand(process.argv[2], process.argv[3]);
 
 function runCommand(cmd, val) {
-    console.log("runCommand", cmd, val);
     switch (cmd) {
         case 'my-tweets':
             runTweet();
@@ -46,21 +47,22 @@ function runTweet() {
     var str = '';
     var cnt = 0;
     var params = { screen_name: 'CutesdKC' };
-    client.get('statuses/user_timeline', params, function (error, tweets, response) {
-        if (!error) {
-            for (const key in tweets) {
-                if (tweets.hasOwnProperty(key) && cnt < 20) {
-                    const obj = tweets[key];
-                    str += 'TWEET #' + (cnt + 1) + '\n';
-                    str += obj.created_at + '\n';
-                    str += obj.text + '\n';
-                    cnt++;
-                }
-            }
-            trace(str);
-        } else {
-            console.log(error);
+    client.get('statuses/user_timeline', params, function (err, tweets, response) {
+        if (err) {
+            return console.log('Error occurred: ' + err);
         }
+
+        for (const key in tweets) {
+            if (tweets.hasOwnProperty(key) && cnt < 20) {
+                const obj = tweets[key];
+                str += 'TWEET #' + (cnt + 1) + '\n';
+                str += obj.created_at + '\n';
+                str += obj.text + '\n';
+                cnt++;
+            }
+        }
+        trace(str);
+
     });
 
 }
@@ -104,8 +106,7 @@ function runSpotify(val) {
 }
 
 
-/* `movie-this`
-node liri.js movie-this '<movie name here>'
+/* node liri.js movie-this '<movie name here>'
 
  * Title of the movie.
    * Year the movie came out.
@@ -120,8 +121,25 @@ node liri.js movie-this '<movie name here>'
 
 //
 function runOmdb(val) {
-    console.log("omdb", val);
     var str = '';
+
+    request('http://www.omdbapi.com/?t=' + val + '&apikey=trilogy', function (err, response, body) {
+        if (err) {
+            return console.log('Error occurred: ' + err);
+        }
+
+        var obj = JSON.parse(body);
+        str += "TITLE:  " + obj["Title"] + '\n';
+        str += "YEAR:  " + obj["Year"] + '\n';
+        str += "IMDB RATING:  " + obj["imdbRating"] + '\n';
+        str += "ROTTEN TOMATOES RATING:  " + obj["Ratings"][1]["Value"] + '\n';
+        str += "COUNTRY:  " + obj["Country"] + '\n';
+        str += "LANGUAGE:  " + obj["Language"] + '\n';
+        str += "PLOT:  " + obj["Plot"] + '\n';
+        str += "ACTORS:  " + obj["Actors"] + '\n';
+        trace(str);
+
+    });
 
 }
 
@@ -139,11 +157,11 @@ Feel free to change the text in that document to test out the feature for other 
 //
 function runFS() {
 
-    fs.readFile("random.txt", "utf8", function (error, data) {
+    fs.readFile("random.txt", "utf8", function (err, data) {
 
         // If the code experiences any errors it will log the error to the console.
-        if (error) {
-            return console.log(error);
+        if (err) {
+            return console.log(err);
         }
 
         // We will then print the contents of data
@@ -156,7 +174,7 @@ function runFS() {
 
 }
 
-//
+// Outputs string and logs activity
 function trace(str) {
     console.log(str + '\n');
     logActivity(str + '\n');

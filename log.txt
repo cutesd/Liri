@@ -118,3 +118,26 @@ SONG NAME:  Smells Like Teen Spirit
 LINK:  https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T
 ALBUM:  Nevermind (Remastered)
 
+ARTIST:  Backstreet Boys
+SONG NAME:  I Want It That Way
+LINK:  https://open.spotify.com/track/6e40mgJiCid5HRAGrbpGA6
+ALBUM:  The Hits--Chapter One
+
+TITLE:  Scott Pilgrim vs. the World
+YEAR:  2010
+IMDB RATING:  7.5
+ROTTEN TOMATOES RATING:  82%
+COUNTRY:  USA, UK, Canada, Japan
+LANGUAGE:  English
+PLOT:  Scott Pilgrim must defeat his new girlfriend's seven evil exes in order to win her heart.
+ACTORS:  Michael Cera, Alison Pill, Mark Webber, Johnny Simmons
+
+TITLE:  The Lobster
+YEAR:  2015
+IMDB RATING:  7.1
+ROTTEN TOMATOES RATING:  88%
+COUNTRY:  Ireland, UK, Greece, France, Netherlands
+LANGUAGE:  English, French, Greek
+PLOT:  In a dystopian near future, single people, according to the laws of The City, are taken to The Hotel, where they are obliged to find a romantic partner in forty-five days or are transformed into beasts and sent off into The Woods.
+ACTORS:  Jacqueline Abrahams, Roger Ashton-Griffiths, Jessica Barden, Olivia Colman
+
