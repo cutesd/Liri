@@ -134,7 +134,7 @@ function runOmdb(val) {
     if (val === undefined) val = "Mr Nobody";
     var str = '';
 
-    request('http://www.omdbapi.com/?t=' + val + '&apikey=trilogy', function (err, response, body) {
+    request('http://www.omdbapi.com/?t=' + val + '&apikey=f1c265cf', function (err, response, body) {
 
         if (!err && response.statusCode === 200) {
             var obj = JSON.parse(body);
