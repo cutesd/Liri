@@ -135,21 +135,19 @@ function runOmdb(val) {
     var str = '';
 
     request('http://www.omdbapi.com/?t=' + val + '&apikey=trilogy', function (err, response, body) {
-        if (err) {
-            return console.log('Error occurred: ' + err);
+
+        if (!error && response.statusCode === 200) {
+            var obj = JSON.parse(body);
+            str += "TITLE:  " + obj["Title"] + '\n';
+            str += "YEAR:  " + obj["Year"] + '\n';
+            str += "IMDB RATING:  " + obj["imdbRating"] + '\n';
+            str += "ROTTEN TOMATOES RATING:  " + obj["Ratings"][1]["Value"] + '\n';
+            str += "COUNTRY:  " + obj["Country"] + '\n';
+            str += "LANGUAGE:  " + obj["Language"] + '\n';
+            str += "PLOT:  " + obj["Plot"] + '\n';
+            str += "ACTORS:  " + obj["Actors"] + '\n';
+            trace(str);
         }
-
-        var obj = JSON.parse(body);
-        str += "TITLE:  " + obj["Title"] + '\n';
-        str += "YEAR:  " + obj["Year"] + '\n';
-        str += "IMDB RATING:  " + obj["imdbRating"] + '\n';
-        str += "ROTTEN TOMATOES RATING:  " + obj["Ratings"][1]["Value"] + '\n';
-        str += "COUNTRY:  " + obj["Country"] + '\n';
-        str += "LANGUAGE:  " + obj["Language"] + '\n';
-        str += "PLOT:  " + obj["Plot"] + '\n';
-        str += "ACTORS:  " + obj["Actors"] + '\n';
-        trace(str);
-
     });
 
 }
