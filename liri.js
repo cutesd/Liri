@@ -136,7 +136,7 @@ function runOmdb(val) {
 
     request('http://www.omdbapi.com/?t=' + val + '&apikey=trilogy', function (err, response, body) {
 
-        if (!error && response.statusCode === 200) {
+        if (!err && response.statusCode === 200) {
             var obj = JSON.parse(body);
             str += "TITLE:  " + obj["Title"] + '\n';
             str += "YEAR:  " + obj["Year"] + '\n';

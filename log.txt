@@ -5,3 +5,5 @@ node liri.js movie-this the matrix
 node liri.js movie-this 
 node liri.js do-what-it-says 
 node liri.js spotify-this-song "I Want it That Way" 
+node liri.js movie-this Whip It 
+node liri.js movie-this Whip It 
