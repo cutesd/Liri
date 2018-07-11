@@ -16,21 +16,68 @@ var spotify = new Spotify(keys.spotify);
 // OMDB
 var request = require('request');
 
+// Load the NPM Package inquirer
+var inquirer = require("inquirer");
 
-runCommand(process.argv[2], process.argv[3]);
+prompt();
 
-function runCommand(cmd, val) {
-    logActivity(cmd, val);
+// Create a "Prompt" with a series of questions.
+function prompt() {
+    inquirer
+        .prompt([
+            // Here we create a basic text prompt.
+            {
+                type: "list",
+                message: "Choose a command to run:",
+                choices: ["my-tweets", "spotify-this-song", "movie-this", "do-what-it-says"],
+                name: "command"
+            },
+            {
+                type: "input",
+                message: "Enter a search query:",
+                name: "query"
+            }
+        ])
+        .then(response => {
+            // 
+            runCommand(response.command, response.query);
+        });
+}
+
+function searchAgain() {
+    inquirer
+        .prompt([
+            // Here we create a basic text prompt.
+            {
+                type: "confirm",
+                message: "Would you like to search again?",
+                name: "confirm",
+                default: true
+            }
+        ])
+        .then(response => {
+            // 
+            if (response.confirm) {
+                prompt();
+            }
+        });
+}
+
+
+function runCommand(cmd, query) {
+    logActivity(cmd, query);
+    //
+    query = (query.length < 1) ? undefined : query;
     //
     switch (cmd) {
         case 'my-tweets':
             runTweet();
             break;
         case 'spotify-this-song':
-            runSpotify(val);
+            runSpotify(query);
             break;
         case 'movie-this':
-            runOmdb(val);
+            runOmdb(query);
             break;
         case 'do-what-it-says':
             runFS();
@@ -45,7 +92,7 @@ This will show your last 20 tweets and when they were created at in your termina
 
 //
 function runTweet() {
-    var str = '';
+    var str = '\n';
     var cnt = 0;
     var params = { screen_name: 'CutesdKC' };
     client.get('statuses/user_timeline', params, function (err, tweets, response) {
@@ -56,7 +103,7 @@ function runTweet() {
         for (const key in tweets) {
             if (tweets.hasOwnProperty(key) && cnt < 20) {
                 const obj = tweets[key];
-                str += 'TWEET #' + (cnt + 1) + '\n';
+                str += '\nTWEET #' + (cnt + 1) + '\n';
                 str += obj.created_at + '\n';
                 str += obj.text + '\n';
                 cnt++;
@@ -85,7 +132,7 @@ You will utilize the node-spotify-api package in order to retrieve song informat
 //
 function runSpotify(val) {
     var track_name = (val === undefined) ? 'The Sign' : val;
-    var str = '';
+    var str = '\n';
     var idx = 0;
 
     spotify.search({ type: 'track', query: track_name }, function (err, data) {
@@ -104,6 +151,10 @@ function runSpotify(val) {
         });
 
         var obj = data.tracks.items[idx];
+        if(obj === undefined){
+            trace("\nSong not found!");
+            return;
+        }
         str += 'ARTIST:  ' + obj.artists[0].name + '\n';
         str += 'SONG NAME:  ' + obj.name + '\n';
         str += 'LINK:  ' + obj.external_urls.spotify + '\n';
@@ -132,16 +183,27 @@ function runSpotify(val) {
 //
 function runOmdb(val) {
     if (val === undefined) val = "Mr Nobody";
-    var str = '';
+    var str = '\n';
 
     request('http://www.omdbapi.com/?t=' + val + '&apikey=f1c265cf', function (err, response, body) {
 
+        if (err) {
+            return console.log(err);
+        }
+
         if (!err && response.statusCode === 200) {
             var obj = JSON.parse(body);
+            // console.log(JSON.stringify(obj, null, 2));
+            //
+            if (obj.Response === "False") { 
+                trace("\nMovie not found!");
+                return; 
+            }
+            //
             str += "TITLE:  " + obj["Title"] + '\n';
             str += "YEAR:  " + obj["Year"] + '\n';
             str += "IMDB RATING:  " + obj["imdbRating"] + '\n';
-            str += "ROTTEN TOMATOES RATING:  " + obj["Ratings"][1]["Value"] + '\n';
+            if (obj["Ratings"] && obj["Ratings"].length > 1) str += "ROTTEN TOMATOES RATING:  " + obj["Ratings"][1]["Value"] + '\n';
             str += "COUNTRY:  " + obj["Country"] + '\n';
             str += "LANGUAGE:  " + obj["Language"] + '\n';
             str += "PLOT:  " + obj["Plot"] + '\n';
@@ -174,7 +236,7 @@ function runFS() {
         }
 
         // We will then print the contents of data
-        console.log("runFS", data);
+        // console.log("runFS", data);
 
         var _arr = data.split(",");
         runCommand(_arr[0], _arr[1]);
@@ -186,6 +248,7 @@ function runFS() {
 // Outputs string and logs activity
 function trace(str) {
     console.log(str + '\n');
+    searchAgain();
 }
 
 
